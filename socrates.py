@@ -150,14 +150,16 @@ class Memory:
         if self.point != None and self.point < len(self.stack):
             choice = self.stack[self.point]
             self.point += 1
-            if self.point > len(self.stack):
+            if self.point >= len(self.stack):
                 self.point = None
         else:
+            self.point = None
             choice = deck.deal()
             if choice != None:
                 self.stack.append(choice)
-        print("stack %s %s" % ("".join(map(lambda x : ['R','L','D','U'][x], self.stack[0:self.point])),
-                               "".join(map(lambda x : ['R','L','D','U'][x], self.stack[self.point:]))))
+        split = len(self.stack) if self.point is None else self.point
+        print("stack %s %s" % ("".join(['D','L','R','U'][x] for x in self.stack[:split]),
+                               "".join(['D','L','R','U'][x] for x in self.stack[split:])))
         return choice
 
     def replay(self):
@@ -219,7 +221,8 @@ class Board:
                 self.clear()
                 self.move += 1
                 hound.turn()
-                socrates.turn()
+                if not hound.won():
+                    socrates.turn()
                 self.show()
                 self.pause()
             if hound.won():
@@ -249,7 +252,7 @@ class Board:
                     print("X", end='')
                     saw_socrates = True
                     saw_hound = True
-                if socrates.position == position:
+                elif socrates.position == position:
                     print("S", end='')
                     saw_socrates = True
                 elif hound.position == position:
@@ -285,6 +288,6 @@ socrates = Socrates()
 hound = Hound()
 board = Board()
 
-board.start()
-
+if __name__ == "__main__":
+    board.start()
 
